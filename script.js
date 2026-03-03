@@ -129,107 +129,88 @@
 
 
 
-    let registerform = document.querySelector(".register-form");
-    let name = document.getElementById("name");
-    let username = document.getElementById("username");
-    let password = document.getElementById("password");
-    let re_password = document.getElementById("re-password");
-    let table = document.querySelector("table");
+let registerform = document.querySelector(".register-form");
+let name = document.getElementById("name");
+let username = document.getElementById("username");
+let password = document.getElementById("password");
+let re_password = document.getElementById("re-password");
+let table = document.querySelector("table");
 
-    let error = document.createElement("div");
-    error.style.marginTop = "10px";
-    error.style.fontWeight = "bold";
-    registerform.append(error);
+let error = document.createElement("div");
+error.style.marginTop = "10px";
+error.style.fontWeight = "bold";
+registerform.append(error);
 
-    let datas = localStorage.getItem("userdetails");
-    let data = datas ? JSON.parse(datas) : [];
+// ❌ Removed localStorage
+let data = [];   // Only array
 
-    // ✅ Function to show data in table
-    function displayData() {
-        // Remove old rows except header
-        table.querySelectorAll("tr:not(:first-child)").forEach(row => row.remove());
+function displayData() {
+    table.querySelectorAll("tr:not(:first-child)").forEach(row => row.remove());
 
-        data.forEach(function(user) {
-            let row = document.createElement("tr");
+    data.forEach(function(user, index) {
 
-            let nameCell = document.createElement("td");
-            nameCell.textContent = user.name;
+        let row = document.createElement("tr");
 
-            let userCell = document.createElement("td");
-            userCell.textContent = user.username;
+        row.innerHTML = `
+            <td>${user.name}</td>
+            <td>${user.username}</td>
+            <td>${user.password}</td>
+            <td><button onclick="deletedata(${index})">Delete</button></td>
+            <td><button onclick="updatedata(${index})">Update</button></td>
+        `;
 
-            let passCell = document.createElement("td");
-            passCell.textContent = user.password;
-
-            let deleteCell = document.createElement("td");
-            deleteCell.innerHTML = `<button onclick="deletedata(${data.indexOf(user)})">Delete</button>`;
-
-            let updateCell = document.createElement("td");
-            updateCell.innerHTML = `<button onclick="updatedata(${data.indexOf(user)})">Update</button>`;
-
-            row.append(nameCell, userCell, passCell, deleteCell, updateCell);
-            table.append(row);
-        });
-    }
-
-    // Show stored data when page loads
-    displayData();
-
-    registerform.addEventListener("submit", function(e){
-        e.preventDefault();
-
-        if(name.value === "" || username.value === "" || password.value === "" || re_password.value === ""){
-            error.textContent = "All fields are required!";
-            error.style.color = "red";
-            return;
-        }
-
-        if(password.value !== re_password.value){
-            error.textContent = "Passwords do not match!";
-            error.style.color = "red";
-            return;
-        }
-
-        let obj = {
-            name: name.value,
-            username: username.value,
-            password: password.value
-        };
-
-        data.push(obj);
-        localStorage.setItem("userdetails", JSON.stringify(data));
-
-        error.textContent = "Registration Successful!";
-        error.style.color = "green";
-
-        registerform.reset();
-
-        displayData(); 
+        table.append(row);
     });
+}
 
-    function deletedata(index){
-        error.textContent = "One data deleted successfully!";
-        error.style.color = "green";
+registerform.addEventListener("submit", function(e){
+    e.preventDefault();
 
-        data.splice(index, 1);
-        localStorage.setItem("userdetails", JSON.stringify(data));
-        displayData(); 
+    if(name.value === "" || username.value === "" || password.value === "" || re_password.value === ""){
+        error.textContent = "All fields required!";
+        error.style.color = "red";
+        return;
     }
 
-    function updatedata(index){
+    if(password.value !== re_password.value){
+        error.textContent = "Passwords not match!";
+        error.style.color = "red";
+        return;
+    }
 
-    error.textContent = "One data updated";
+    let obj = {
+        name: name.value,
+        username: username.value,
+        password: password.value
+    };
+
+    data.push(obj);
+
+    error.textContent = "Registration Successful!";
     error.style.color = "green";
-    // Fill form with existing data
+
+    registerform.reset();
+
+    displayData();
+});
+
+function deletedata(index){
+    data.splice(index, 1);
+    error.textContent = "Deleted Successfully!";
+    error.style.color = "green";
+    displayData();
+}
+
+function updatedata(index){
     name.value = data[index].name;
     username.value = data[index].username;
     password.value = data[index].password;
     re_password.value = data[index].password;
 
-    // Remove old data temporarily
     data.splice(index, 1);
-    localStorage.setItem("userdetails", JSON.stringify(data));
+
+    error.textContent = "Now update and submit!";
+    error.style.color = "blue";
 
     displayData();
 }
-        
