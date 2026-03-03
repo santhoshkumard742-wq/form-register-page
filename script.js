@@ -141,8 +141,8 @@
     error.style.fontWeight = "bold";
     registerform.append(error);
 
-    let datas = localStorage.getItem("userdetails") || [];
-    let data = JSON.parse(datas);
+    let datas = localStorage.getItem("userdetails");
+    let data = datas ? JSON.parse(datas) : [];
 
     // ✅ Function to show data in table
     function displayData() {
